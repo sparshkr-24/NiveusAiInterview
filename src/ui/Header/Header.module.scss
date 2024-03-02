@@ -1,0 +1,23 @@
+body {
+  margin: 0;
+  padding: 0;
+}
+
+.container {
+  display: flex;
+  justify-content: start;
+  align-items: center;
+  padding: 1.2rem 2.4rem;
+  margin: 0;
+  border-bottom: 1px solid #ddd; 
+}
+
+.button {
+  background-color: inherit !important;
+  border: none !important;
+  cursor: pointer;
+}
+
+.scalerLogo {
+  transform: scale(1.2);
+}

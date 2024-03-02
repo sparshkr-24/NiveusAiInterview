@@ -1,24 +1,22 @@
-import logo from './logo.svg';
-import './App.css';
+import React from 'react';
+import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
+import { Provider } from 'react-redux'; // Import Provider
+import store from './store'; // Import your Redux store
+import NiveousHomePage from './pages/NiveusHomePage';
+import NiveousInterviewTabsPage from './pages/NiveusInterviewTabsPage';
+import Header from './ui/Header';
 
 function App() {
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <Provider store={store}>
+      <Router>
+        <Header />
+          <Switch>
+            <Route path="/" exact component={NiveousHomePage} />
+            <Route path="/:slug" component={NiveousInterviewTabsPage} />
+          </Switch>
+      </Router>
+    </Provider>
   );
 }
 

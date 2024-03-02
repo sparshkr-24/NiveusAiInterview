@@ -1,0 +1,106 @@
+$dark-color: #333;
+$gray-color: rgb(120, 118, 118);
+$light-gray-color: rgb(228, 223, 223);
+$primary-color: rgba(3, 59, 226, 0.961);
+
+.container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 80vh;
+  width: 95%;
+  max-width: 110rem;
+}
+
+.codeEditor {
+  background-color: $dark-color;
+  color: white;
+  height: 100%;
+  width: 50%;
+}
+
+.inputArea {
+  display: flex;
+  flex-direction: column;
+  width: 50%;
+  height: 100%;
+}
+
+.chatBox {
+  display: flex;
+  flex-direction: column;
+  justify-content: start;
+  align-items: start;
+  padding: 0 0.6rem;
+  overflow-y: auto;
+  height: 85%;
+  border-bottom: solid 1px $light-gray-color;
+}
+
+.footer {
+  display: flex;
+  align-items: end;
+  padding: 0.4rem;
+  height: 15%;
+}
+
+.voiceSection {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  width: 50%;
+}
+
+.submitSection {
+  display: flex;
+  flex-direction: column;
+  align-items: end;
+  gap: 0.5rem;
+  width: 50%;
+}
+
+.audioOption {
+  display: flex;
+  align-items: center;
+  justify-content: start;
+  gap: 0.5rem;
+  width: 9rem;
+}
+
+.hint {
+  display: flex;
+  align-items: center;
+}
+
+.submit {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.submitButton {
+  background-color: white;
+  border: solid $primary-color;
+  border-radius: 0.7rem;
+  color: $primary-color;
+  padding: 0.4rem 1.2rem;
+}
+
+.submitButton:hover {
+  background-color: $primary-color;
+  color: white;
+  cursor: pointer;
+}
+
+.skipButton {
+  background-color: white;
+  border: solid $gray-color;
+  border-radius: 0.7rem;
+  color: $gray-color;
+  padding: 0.4rem 1.2rem;
+}
+
+.skipButton:hover {
+  background-color: $gray-color;
+  color: white;
+  cursor: pointer;
+}

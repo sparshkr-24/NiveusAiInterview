@@ -1,0 +1,35 @@
+$primary-color: rgba(26, 80, 245, 0.961);
+$dark-blue-color: rgb(30, 30, 196);
+
+.container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 50vh;
+}
+
+.heading {
+  display: flex;
+  align-items: center;
+  font-size: 3.2rem;
+  font-weight: bold;
+  margin: 0 0 2.4rem;
+}
+
+.aiLogo {
+  margin: 0 0.6rem;
+}
+
+.startButton {
+  padding: 0.8rem 2.4rem;
+  background-color: $primary-color;
+  color: white;
+  border-radius: 0.6rem;
+  border: none;
+}
+
+.startButton:hover {
+  background-color: $dark-blue-color;
+  cursor: pointer;
+}

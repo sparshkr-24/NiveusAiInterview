@@ -1,0 +1,26 @@
+.tabContainer {
+  display: flex;
+  justify-content: start;
+  align-items: center;
+  gap: 1rem;
+  border-top: solid 1px #ddd;
+  border-bottom: solid 1px #ddd;
+  padding: 0.2rem 1rem;
+  margin: 0.4rem 0;
+}
+
+.tab {
+  padding: 0.3rem 1rem;
+  border-radius: 0.4rem;
+  cursor: pointer;
+}
+
+.activeTab {
+  background-color: rgb(194, 191, 191);
+}
+
+.tabContent {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
