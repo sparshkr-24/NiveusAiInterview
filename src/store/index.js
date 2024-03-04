@@ -3,6 +3,8 @@ import {
 } from 'redux';
 import { thunk } from 'redux-thunk'
 
+import chatMessage from './chatMessage'
+import report from './report'
 import interview from './interview'
 import session from './session'
 
@@ -11,6 +13,8 @@ const middleware = [
 ];
 
 const reducers = combineReducers({
+  chatMessage,
+  report,
   interview,
   session
 });

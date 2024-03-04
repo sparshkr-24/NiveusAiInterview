@@ -1,10 +1,18 @@
 $light-gray-color: rgb(240, 240, 240);
+$yellow-color: rgb(245, 245, 151);
 
-.chatBubble {
+.bubble {
   padding: 0.5rem 1rem;
   border: solid;
   border-radius: 10px;
   margin: 0 0 0.5rem;
   max-width: 28rem;
+}
+
+.chatBubble {
   background-color: $light-gray-color;
+}
+
+.hintBubble {
+  background-color: $yellow-color;
 }

@@ -1,13 +1,17 @@
-import React, { useState } from 'react';
+import React from 'react';
 import InterviewTab from '../../components/InterviewTab';
 import FeedbackTab from '../../components/FeedbackTab';
 import styles from './NiveusInterviewTabsPage.module.scss';
+import { useDispatch, useSelector } from 'react-redux';
+import { interviewActiveTabSelector } from '../../selectors/interview';
+import { updateTab } from '../../store/interview';
 
 const NiveusInterviewTabsPage = () => {
-  const [activeTab, setActiveTab] = useState('interview');
+  const dispatch = useDispatch()
+  const activeTab = useSelector(interviewActiveTabSelector)
 
   const handleTabChange = (tab) => {
-    setActiveTab(tab);
+    dispatch(updateTab({activeTab: tab}))
   };
 
   return (

@@ -1,10 +1,12 @@
 import generateToken from "../utils/generateToken";
 import interviewApi from '../api/interview'
 import { resetSessionStore } from "./session";
+import { TAB_SECTION_NAMES } from "../data/answerType";
 
 const START_INTERVIEW_INIT = 'START_INTERVIEW_INIT'
 const START_INTERVIEW_ERROR = 'START_INTERVIEW_ERROR'
 const START_INTERVIEW_DONE = 'START_INTERVIEW_DONE'
+const UPDATE_INTERVIEW_TAB = 'UPDATE_INTERVIEW_TAB'
 const RESET_INTERVIEW_STORE = 'RESET_INTERVIEW_STORE'
 
 export function startInterview() {
@@ -29,6 +31,13 @@ export function startInterview() {
   }
 }
 
+export const updateTab = ({ activeTab }) => {
+  return {
+    type: UPDATE_INTERVIEW_TAB,
+    payload: activeTab
+  }
+}
+
 export const resetInterviewStore = () => {
   return {
     type: RESET_INTERVIEW_STORE,
@@ -47,7 +56,8 @@ const initialState = {
   isLoading: false,
   loaded: false,
   loadError: null,
-  sessionToken: null
+  sessionToken: null,
+  activeTab: TAB_SECTION_NAMES.interview
 };
 
 function reducer(state = initialState, action) {
@@ -71,6 +81,11 @@ function reducer(state = initialState, action) {
         loaded: true,
         sessionToken: action.payload
       };
+    case UPDATE_INTERVIEW_TAB:
+      return {
+        ...state,
+        activeTab: action.payload
+      }
     case RESET_INTERVIEW_STORE:
       return initialState
     default:

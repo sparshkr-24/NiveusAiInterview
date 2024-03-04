@@ -27,7 +27,7 @@ async function codeAnswer({ userCode }) {
   return response
 }
 
-async function getHint({ code = 'no code' }) {
+async function getHint({ code }) {
   const formData = new FormData()
   formData.append('code', code)
   

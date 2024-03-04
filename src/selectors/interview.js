@@ -6,3 +6,8 @@ export const interviewDataSelector = createSelector(
   baseSelector,
   (data) => data
 );
+
+export const interviewActiveTabSelector = createSelector(
+  baseSelector,
+  (data) => data.activeTab || ''
+)

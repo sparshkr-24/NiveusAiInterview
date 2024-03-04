@@ -1,5 +1,7 @@
 import interviewApi from '../api/interview'
-import { AUDIO_ANSWER_CODES } from '../data/answerType'
+import { AUDIO_ANSWER_CODES, TOTAL_QUESTIONS } from '../data/answerType'
+import { addToChat } from './chatMessage'
+import { getAiReport } from './report'
 
 const GET_QUESTION_INIT = 'GET_QUESTION_INIT'
 const GET_QUESTION_ERROR = 'GET_QUESTION_ERROR'
@@ -14,7 +16,13 @@ const INCREMENT_QUESTIONS_COUNT = 'INCREMENT_QUESTIONS_COUNT'
 const RESET_SESSION_STORE = 'RESET_SESSION_STORE'
 
 export function getQuestion() {
-  return async (dispatch) => {
+  return async (dispatch, getState) => {
+    const { data } = getState().session.questions
+    const len = data.length
+
+    if(len === TOTAL_QUESTIONS){
+      dispatch(getAiReport())
+    }
     dispatch({
       type: GET_QUESTION_INIT
     })
@@ -25,6 +33,7 @@ export function getQuestion() {
         type: GET_QUESTION_DONE,
         payload: response
       })
+      dispatch(addToChat({ message: response, type: 'question' }))
     } catch (error) {
       dispatch({
         type: GET_QUESTION_ERROR,
@@ -36,7 +45,7 @@ export function getQuestion() {
 
 export function submitAnswer({ userCode = 'no code', audioFile = null }) {
   return async (dispatch, getState) => {
-    const { data } = getState().session.questions;
+    const { data, isLoading } = getState().session.questions;
     const len = data.length;
 
     dispatch({
@@ -56,6 +65,9 @@ export function submitAnswer({ userCode = 'no code', audioFile = null }) {
         type: SUBMIT_ANSWER_DONE,
         payload: payloadData
       })
+      if(!isLoading){
+        dispatch(getQuestion())
+      }
     } catch (error) {
       dispatch({
         type: SUBMIT_ANSWER_ERROR,
@@ -65,17 +77,21 @@ export function submitAnswer({ userCode = 'no code', audioFile = null }) {
   }
 }
 
-export function askHint ({ code }) {
+export function askHint ({ code = 'no code' }) {
   return (async (dispatch) => {
     dispatch({
       type: GET_HINT_INIT
     })
     try {
       const response  = await interviewApi.getHint({ code })
+      if (!response?.hint) {
+        throw new Error('Hint not available');
+      }
       dispatch({
         type: GET_HINT_DONE,
-        payload: response.hint
+        payload: response
       })
+      dispatch(addToChat({ message: response.hint, type: 'hint'}))
     } catch (error) {
       dispatch({
         type: GET_HINT_ERROR,

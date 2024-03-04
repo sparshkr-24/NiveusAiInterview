@@ -1,32 +1,35 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
+import { useHistory } from 'react-router-dom/cjs/react-router-dom.min';
 
 import { askHint, getQuestion, submitAnswer } from '../../store/session';
+import { chatDataSelector } from '../../selectors/chatMessage';
 import { interviewDataSelector } from '../../selectors/interview'
-import { useHistory } from 'react-router-dom/cjs/react-router-dom.min';
 import { 
   sessionAnswersSelector, 
   sessionHintsSelector, 
   sessionQuestionsSelector 
 } from '../../selectors/session';
-import AudioRecorder from '../AudioRecorder';
 import { AUDIO_ANSWER_CODES } from '../../data/answerType';
+import AudioRecorder from '../AudioRecorder';
 import ChatBubble from '../../ui/ChatBubble/ChatBubble';
 import HintIcon from '../../images/hint-icon.png';
 import styles from './InterviewTab.module.scss';
-import AiLoadingState from '../../ui/AiLoadingState';
+import AudioLoadingState from '../../ui/AudioLoadingState';
 
 const InterviewTab = () => {
   const dispatch = useDispatch()
   const history = useHistory()
   const { sessionToken } = useSelector(interviewDataSelector)
-  const { data, isLoading: isQuestionLoading } = useSelector(sessionQuestionsSelector)
+  const { data: questionData, isLoading: isQuestionLoading } = useSelector(sessionQuestionsSelector)
   const { isLoading: isAnswerLoading } = useSelector(sessionAnswersSelector)
-  const { isLoading: isHintLoading } = useSelector(sessionHintsSelector)
+  const { data: hintData, isLoading: isHintLoading } = useSelector(sessionHintsSelector)
+  const { chat } = useSelector(chatDataSelector)
   const [codeValue, setCodeValue] = useState('');
   const [audioURL, setAudioURL] = useState(null);
   const [isAudioIput, setIsAudioInput] = useState(true)
-  const len = data.length;
+  const len = questionData.length;
+  const chatBoxRef = useRef(null)
 
   const isLoading = isQuestionLoading || isAnswerLoading || isHintLoading
 
@@ -37,9 +40,6 @@ const InterviewTab = () => {
   const handleSubmit = () => {
     dispatch(submitAnswer({userCode: codeValue, audioFile: audioURL}))
     setAudioURL(null)
-    if(!isAnswerLoading){
-      dispatch(getQuestion())
-    }
   }
 
   const handleGetHint = () => {
@@ -52,7 +52,7 @@ const InterviewTab = () => {
     }
 
     let timeout;
-    if(data.length === 1){
+    if(questionData.length === 1){
       timeout = setTimeout(() => {
         dispatch(getQuestion());
       }, 1000);
@@ -63,7 +63,7 @@ const InterviewTab = () => {
         return clearTimeout(timeout);
       }
     }
-  }, [sessionToken, history, dispatch, data]);
+  }, [sessionToken, history, dispatch, questionData]);
 
   useEffect(()=>{
     if(AUDIO_ANSWER_CODES.includes(len)){
@@ -72,6 +72,15 @@ const InterviewTab = () => {
       setIsAudioInput(false)
     }
   }, [len])
+
+  useEffect(() => {
+    if (chatBoxRef.current) {
+      chatBoxRef.current.scrollTo({
+        top: chatBoxRef.current.scrollHeight,
+        behavior: 'smooth'
+      });
+    }
+  }, [chat]);  
 
   return (
     <div className={styles.container}>
@@ -82,11 +91,11 @@ const InterviewTab = () => {
         onChange={handleCodeValueChange}
       ></textarea>
       <div className={styles.inputArea}>
-        <div className={styles.chatBox}>
-          {data.map((message, i) => (
-            <ChatBubble key={i} message={message} />
+        <div className={styles.chatBox} ref={chatBoxRef}>
+          {chat.map((item, i) => (
+            <ChatBubble key={i} item={item} />
           ))}
-          {isLoading && <AiLoadingState />}
+          {isLoading && <AudioLoadingState />}
         </div>
         <div className={styles.footer}>
           <div className={styles.voiceSection}>
@@ -95,7 +104,7 @@ const InterviewTab = () => {
           <div className={styles.submitSection}>
             <button onClick={handleGetHint} className={styles.hint}>
               <img src={HintIcon} alt='hint-icon' width={20} height={20} />
-              3 hints left
+              {hintData ? hintData[hintData.length - 1]?.hint_count: 3} hints left
             </button>
             <button 
               onClick={handleSubmit} 

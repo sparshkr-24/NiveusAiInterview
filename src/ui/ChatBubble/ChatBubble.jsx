@@ -2,12 +2,12 @@ import React from 'react'
 
 import styles from './ChatBubble.module.scss'
 
-const ChatBubble = ({message}) => {
+const ChatBubble = ({item}) => {
   return (
     <>
-      {message && ( 
-        <div className={styles.chatBubble}>
-          {message}
+      {item && ( 
+        <div className={`${styles.bubble} ${item.type === 'hint' ? styles.hintBubble: styles.chatBubble}`}>
+          {item.message}
         </div>
       )}
     </>
