@@ -1,14 +1,19 @@
 import React, { useEffect, useState } from 'react';
+import { useSelector } from 'react-redux';
 
 import MicEnabled from '../../images/microphone.svg'
 import MicDisabled from '../../images/mic-off.svg'
 import styles from './AudioRecorder.module.scss'
+import { AUDIO_ANSWER_CODES } from '../../data/answerType';
+import { sessionQuestionsSelector } from '../../selectors/session';
+import AudioLoadingState from '../../ui/AudioLoadingState';
 
-const AudioRecorder = ({len}) => {
+const AudioRecorder = ({ audioURL, setAudioURL }) => {
+  const { data } = useSelector(sessionQuestionsSelector)
   const [isMicRequired, setIsMicRequired] = useState(false)
   const [recording, setRecording] = useState(false);
-  const [audioURL, setAudioURL] = useState(null);
   const [mediaRecorder, setMediaRecorder] = useState(null);
+  const len = data.length
 
   const startRecording = async () => {
     try {
@@ -42,8 +47,7 @@ const AudioRecorder = ({len}) => {
   };
 
   useEffect(()=>{
-    console.log('len: ', len);
-    if(len === 2 || 4 || 5){
+    if(AUDIO_ANSWER_CODES.includes(len)){
       setIsMicRequired(true)
     }
     else{
@@ -56,8 +60,14 @@ const AudioRecorder = ({len}) => {
       <button 
         onClick={recording ? stopRecording : startRecording}
         className={styles.buttons}
+        disabled={!isMicRequired}
       >
-        {recording ? <img src={MicEnabled} className={styles.micIcon} alt='mic-enabled' width={20} height={20} /> : 
+        {recording ? (
+          <div className={styles.micOn}>
+            <img src={MicEnabled} className={styles.micIcon} alt='mic-enabled' width={20} height={20} />
+            <AudioLoadingState />
+          </div>
+          ) : 
           <img 
             src={MicDisabled} 
             alt='mic-disabled' 

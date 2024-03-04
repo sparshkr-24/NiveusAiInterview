@@ -72,11 +72,6 @@ $primary-color: rgba(3, 59, 226, 0.961);
   align-items: center;
 }
 
-.submit {
-  display: flex;
-  gap: 0.5rem;
-}
-
 .submitButton {
   background-color: white;
   border: solid $primary-color;

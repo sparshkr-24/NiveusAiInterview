@@ -1,55 +1,109 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 
-import { getQuestion } from '../../store/session';
-import {interviewDataSelector} from '../../selectors/interview'
+import { askHint, getQuestion, submitAnswer } from '../../store/session';
+import { interviewDataSelector } from '../../selectors/interview'
+import { useHistory } from 'react-router-dom/cjs/react-router-dom.min';
+import { 
+  sessionAnswersSelector, 
+  sessionHintsSelector, 
+  sessionQuestionsSelector 
+} from '../../selectors/session';
+import AudioRecorder from '../AudioRecorder';
+import { AUDIO_ANSWER_CODES } from '../../data/answerType';
 import ChatBubble from '../../ui/ChatBubble/ChatBubble';
 import HintIcon from '../../images/hint-icon.png';
 import styles from './InterviewTab.module.scss';
-import AudioRecorder from '../../ui/AudioRecorder';
-import { useHistory } from 'react-router-dom/cjs/react-router-dom.min';
-import { sessionDataSelector } from '../../selectors/session';
+import AiLoadingState from '../../ui/AiLoadingState';
 
 const InterviewTab = () => {
   const dispatch = useDispatch()
   const history = useHistory()
   const { sessionToken } = useSelector(interviewDataSelector)
-  const { questions } = useSelector(sessionDataSelector)
+  const { data, isLoading: isQuestionLoading } = useSelector(sessionQuestionsSelector)
+  const { isLoading: isAnswerLoading } = useSelector(sessionAnswersSelector)
+  const { isLoading: isHintLoading } = useSelector(sessionHintsSelector)
+  const [codeValue, setCodeValue] = useState('');
+  const [audioURL, setAudioURL] = useState(null);
+  const [isAudioIput, setIsAudioInput] = useState(true)
+  const len = data.length;
+
+  const isLoading = isQuestionLoading || isAnswerLoading || isHintLoading
+
+  const handleCodeValueChange = (event) => {
+    setCodeValue(event.target.value);
+  };
+
+  const handleSubmit = () => {
+    dispatch(submitAnswer({userCode: codeValue, audioFile: audioURL}))
+    setAudioURL(null)
+    if(!isAnswerLoading){
+      dispatch(getQuestion())
+    }
+  }
+
+  const handleGetHint = () => {
+    dispatch(askHint({code: codeValue}))
+  }
 
   useEffect(() => {
     if (!sessionToken) {
       history.push('/');
     }
 
-    const timerId = setTimeout(() => {
-      dispatch(getQuestion());
-    }, 4000);
+    let timeout;
+    if(data.length === 1){
+      timeout = setTimeout(() => {
+        dispatch(getQuestion());
+      }, 1000);
+    }
 
-    return () => clearTimeout(timerId);
-  }, [sessionToken, history, dispatch]);
+    return () => {
+      if(timeout){
+        return clearTimeout(timeout);
+      }
+    }
+  }, [sessionToken, history, dispatch, data]);
+
+  useEffect(()=>{
+    if(AUDIO_ANSWER_CODES.includes(len)){
+      setIsAudioInput(true)
+    } else {
+      setIsAudioInput(false)
+    }
+  }, [len])
 
   return (
     <div className={styles.container}>
-      <textarea className={styles.codeEditor} placeholder="Write your code here"></textarea>
+      <textarea
+        className={styles.codeEditor}
+        placeholder="Write your code here"
+        value={codeValue}
+        onChange={handleCodeValueChange}
+      ></textarea>
       <div className={styles.inputArea}>
         <div className={styles.chatBox}>
-          {questions.map((message, i) => (
+          {data.map((message, i) => (
             <ChatBubble key={i} message={message} />
           ))}
+          {isLoading && <AiLoadingState />}
         </div>
         <div className={styles.footer}>
           <div className={styles.voiceSection}>
-            <AudioRecorder len={questions.length} />
+            <AudioRecorder audioURL={audioURL} setAudioURL={setAudioURL} />
           </div>
           <div className={styles.submitSection}>
-            <div className={styles.hint}>
+            <button onClick={handleGetHint} className={styles.hint}>
               <img src={HintIcon} alt='hint-icon' width={20} height={20} />
               3 hints left
-            </div>
-            <div className={styles.submit}>
-              <button className={styles.skipButton}>Skip</button>
-              <button className={styles.submitButton}>Submit</button>
-            </div>
+            </button>
+            <button 
+              onClick={handleSubmit} 
+              className={styles.submitButton}
+              disabled={isLoading}
+            >
+              {isAudioIput ? 'Submit Audio': 'Submit Code'}
+            </button>
           </div>
         </div>
       </div>

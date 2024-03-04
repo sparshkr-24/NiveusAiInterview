@@ -6,32 +6,32 @@ async function login() {
 }
 
 async function getQuestion() {
-  console.log('api called');
   const response = await apiRequest('/question', 'POST');
   return response.question
 }
 
-async function audioAnswer({audioFile}) {
-  const body = {
-    audio_file: audioFile
-  }
-  const response = await apiRequest('/audio_answer', 'POST', body);
+async function audioAnswer({ audioFile }) {
+  const audioBlob = await fetch(audioFile).then(response => response.blob());
+  const formData = new FormData();
+  formData.append('audio_file', audioBlob, 'audio.wav');
+  formData.set('Content-Type', audioBlob.type);
+  const response = await apiRequest('/audio_answer', 'POST', formData);
   return response
 }
 
-async function codeAnswer({userCode}) {
-  const body = {
-    user_code: userCode
-  }
-  const response = await apiRequest('/code_answer', 'POST', body);
+async function codeAnswer({ userCode }) {
+  const formData = new FormData();
+  formData.append('user_code', userCode);
+
+  const response = await apiRequest('/code_answer', 'POST', formData);
   return response
 }
 
-async function getHint({code}) {
-  const body = {
-    code
-  }
-  const response = await apiRequest('/hint', 'POST', body);
+async function getHint({ code = 'no code' }) {
+  const formData = new FormData()
+  formData.append('code', code)
+  
+  const response = await apiRequest('/hint', 'POST', formData);
   return response
 }
 

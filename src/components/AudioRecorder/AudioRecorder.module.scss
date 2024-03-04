@@ -10,7 +10,6 @@
   }
 }
 
-
 .audioController {
   width: 16rem;
   height: 2.4rem;
@@ -20,6 +19,11 @@
   border: none !important;
   background-color: inherit !important;
   cursor: pointer;
+}
+
+.micOn {
+  display: flex;
+  gap: 0.5rem;
 }
 
 .micIcon {

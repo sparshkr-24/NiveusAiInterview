@@ -4,9 +4,13 @@ import styles from './ChatBubble.module.scss'
 
 const ChatBubble = ({message}) => {
   return (
-    <div className={styles.chatBubble}>
-      {message}
-    </div>
+    <>
+      {message && ( 
+        <div className={styles.chatBubble}>
+          {message}
+        </div>
+      )}
+    </>
   )
 }
 
