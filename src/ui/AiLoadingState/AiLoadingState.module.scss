@@ -6,9 +6,10 @@
 }
 
 .loader {
-  width: 60px;
+  width: 3rem;
+  height: 1.4rem;
   aspect-ratio: 2;
-  --_g: no-repeat radial-gradient(circle closest-side,#000 90%,#0000);
+  --_g: no-repeat radial-gradient(circle closest-side, #1e1e22 90%, #05033f00);
   background: 
     var(--_g) 0%   50%,
     var(--_g) 50%  50%,

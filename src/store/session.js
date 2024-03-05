@@ -2,6 +2,8 @@ import interviewApi from '../api/interview'
 import { AUDIO_ANSWER_CODES, TOTAL_QUESTIONS } from '../data/answerType'
 import { addToChat } from './chatMessage'
 import { getAiReport } from './report'
+import { TAB_SECTION_NAMES } from "../data/answerType"
+import { updateTab } from "./interview"
 
 const GET_QUESTION_INIT = 'GET_QUESTION_INIT'
 const GET_QUESTION_ERROR = 'GET_QUESTION_ERROR'
@@ -12,7 +14,6 @@ const SUBMIT_ANSWER_DONE = 'SUBMIT_ANSWER_DONE'
 const GET_HINT_INIT = 'GET_HINT_INIT'
 const GET_HINT_ERROR = 'GET_HINT_ERROR'
 const GET_HINT_DONE = 'GET_HINT_DONE'
-const INCREMENT_QUESTIONS_COUNT = 'INCREMENT_QUESTIONS_COUNT'
 const RESET_SESSION_STORE = 'RESET_SESSION_STORE'
 
 export function getQuestion() {
@@ -21,7 +22,9 @@ export function getQuestion() {
     const len = data.length
 
     if(len === TOTAL_QUESTIONS){
+      dispatch(updateTab({activeTab: TAB_SECTION_NAMES.feedback}))
       dispatch(getAiReport())
+      return;
     }
     dispatch({
       type: GET_QUESTION_INIT
@@ -101,10 +104,17 @@ export function askHint ({ code = 'no code' }) {
   })
 }
 
-export const incrementQuestionsCount = () => {
-  return {
-    type: INCREMENT_QUESTIONS_COUNT,
-  }
+export function deleteSession () {
+  return (async () => {
+    try {
+      const response = await interviewApi.deleteSession()
+      if(!response.ok){
+        throw new Error('Cannot delete this session')
+      }
+    } catch (error) {
+      // doing nothing for now
+    }
+  })
 }
 
 export const resetSessionStore = () => {
@@ -124,7 +134,6 @@ const initialState = {
   questions: commonInitialState,
   answers: commonInitialState,
   hints: commonInitialState,
-  questionsCount: 0
 };
 
 function reducer(state = initialState, action) {
@@ -214,11 +223,6 @@ function reducer(state = initialState, action) {
           data: [...state.hints.data, action.payload]
         }
       };
-    case INCREMENT_QUESTIONS_COUNT:
-      return {
-        ...state,
-        questionsCount: state.questionsCount + 1
-      }
     case RESET_SESSION_STORE:
       return initialState
     default:

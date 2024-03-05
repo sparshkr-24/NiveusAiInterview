@@ -1,6 +1,5 @@
 import interviewApi from "../api/interview"
-import { TAB_SECTION_NAMES } from "../data/answerType"
-import { updateTab } from "./interview"
+import { deleteSession } from "./session"
 
 const GET_REPORT_INIT = 'GET_REPORT_INIT'
 const GET_REPORT_ERROR = 'GET_REPORT_ERROR'
@@ -17,11 +16,11 @@ export function getAiReport() {
       if(!response?.report) {
         throw new Error('Cannot generate report')
       }
-      dispatch(updateTab({activeTab: TAB_SECTION_NAMES.feedback}))
       dispatch({
         type: GET_REPORT_DONE,
         payload: response.report
       })
+      dispatch(deleteSession())
     } catch (error) {
       dispatch({
         type: GET_REPORT_ERROR,

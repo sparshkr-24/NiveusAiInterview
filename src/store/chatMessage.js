@@ -8,7 +8,7 @@ export function addToChat(data) {
   }
 }
 
-export const resetInterviewStore = () => {
+export const resetIChatStore = () => {
   return {
     type: RESET_CHAT_STORE,
   }

@@ -1,7 +1,9 @@
 import generateToken from "../utils/generateToken";
 import interviewApi from '../api/interview'
-import { resetSessionStore } from "./session";
+import { getQuestion, resetSessionStore } from "./session";
 import { TAB_SECTION_NAMES } from "../data/answerType";
+import { resetReportStore } from "./report";
+import { resetIChatStore } from "./chatMessage";
 
 const START_INTERVIEW_INIT = 'START_INTERVIEW_INIT'
 const START_INTERVIEW_ERROR = 'START_INTERVIEW_ERROR'
@@ -22,6 +24,7 @@ export function startInterview() {
       })
       localStorage.setItem('sessionToken', token)
       await interviewApi.login()
+      dispatch(getQuestion())
     } catch (error) {
       dispatch({
         type: START_INTERVIEW_ERROR,
@@ -48,6 +51,8 @@ export const masterResetStore = () => {
   return (async (dispatch) => {
     dispatch(resetInterviewStore())
     dispatch(resetSessionStore())
+    dispatch(resetReportStore())
+    dispatch(resetIChatStore())
     localStorage.removeItem('sessionToken')
   })
 }

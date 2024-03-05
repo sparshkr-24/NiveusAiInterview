@@ -6,32 +6,29 @@ import { askHint, getQuestion, submitAnswer } from '../../store/session';
 import { chatDataSelector } from '../../selectors/chatMessage';
 import { interviewDataSelector } from '../../selectors/interview'
 import { 
-  sessionAnswersSelector, 
+  questionsCountSelector,
   sessionHintsSelector, 
-  sessionQuestionsSelector 
+  sessionLoaderSelector,
 } from '../../selectors/session';
 import { AUDIO_ANSWER_CODES } from '../../data/answerType';
 import AudioRecorder from '../AudioRecorder';
 import ChatBubble from '../../ui/ChatBubble/ChatBubble';
 import HintIcon from '../../images/hint-icon.png';
 import styles from './InterviewTab.module.scss';
-import AudioLoadingState from '../../ui/AudioLoadingState';
+import AiLoadingState from '../../ui/AiLoadingState';
 
 const InterviewTab = () => {
   const dispatch = useDispatch()
   const history = useHistory()
   const { sessionToken } = useSelector(interviewDataSelector)
-  const { data: questionData, isLoading: isQuestionLoading } = useSelector(sessionQuestionsSelector)
-  const { isLoading: isAnswerLoading } = useSelector(sessionAnswersSelector)
-  const { data: hintData, isLoading: isHintLoading } = useSelector(sessionHintsSelector)
+  const { isSessionLoading } = useSelector(sessionLoaderSelector)
+  const { data: hintData } = useSelector(sessionHintsSelector)
   const { chat } = useSelector(chatDataSelector)
+  const len = useSelector(questionsCountSelector)
   const [codeValue, setCodeValue] = useState('');
   const [audioURL, setAudioURL] = useState(null);
   const [isAudioIput, setIsAudioInput] = useState(true)
-  const len = questionData.length;
   const chatBoxRef = useRef(null)
-
-  const isLoading = isQuestionLoading || isAnswerLoading || isHintLoading
 
   const handleCodeValueChange = (event) => {
     setCodeValue(event.target.value);
@@ -52,7 +49,7 @@ const InterviewTab = () => {
     }
 
     let timeout;
-    if(questionData.length === 1){
+    if(len === 1){
       timeout = setTimeout(() => {
         dispatch(getQuestion());
       }, 1000);
@@ -63,7 +60,7 @@ const InterviewTab = () => {
         return clearTimeout(timeout);
       }
     }
-  }, [sessionToken, history, dispatch, questionData]);
+  }, [sessionToken, history, dispatch, len]);
 
   useEffect(()=>{
     if(AUDIO_ANSWER_CODES.includes(len)){
@@ -95,7 +92,7 @@ const InterviewTab = () => {
           {chat.map((item, i) => (
             <ChatBubble key={i} item={item} />
           ))}
-          {isLoading && <AudioLoadingState />}
+          {isSessionLoading && <AiLoadingState />}
         </div>
         <div className={styles.footer}>
           <div className={styles.voiceSection}>
@@ -104,12 +101,12 @@ const InterviewTab = () => {
           <div className={styles.submitSection}>
             <button onClick={handleGetHint} className={styles.hint}>
               <img src={HintIcon} alt='hint-icon' width={20} height={20} />
-              {hintData ? hintData[hintData.length - 1]?.hint_count: 3} hints left
+              {3 - hintData.length} hints left
             </button>
             <button 
               onClick={handleSubmit} 
               className={styles.submitButton}
-              disabled={isLoading}
+              disabled={isSessionLoading}
             >
               {isAudioIput ? 'Submit Audio': 'Submit Code'}
             </button>

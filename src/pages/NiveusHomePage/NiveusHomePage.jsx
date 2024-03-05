@@ -6,7 +6,6 @@ import styles from './NiveusHomePage.module.scss'
 import { interviewDataSelector } from '../../selectors/interview'
 import { startInterview } from '../../store/interview';
 import AiLogo from '../../images/ai-logo.svg'
-import { getQuestion } from '../../store/session';
 
 const NiveusHomePage = () => {
   const history = useHistory()
@@ -20,10 +19,9 @@ const NiveusHomePage = () => {
 
   useEffect(()=>{
     if(sessionToken){
-      dispatch(getQuestion())
       history.push(`/${sessionToken}`)
     }
-  }, [history, sessionToken, dispatch])
+  }, [history, sessionToken])
 
   return (
     <div className={styles.container}>

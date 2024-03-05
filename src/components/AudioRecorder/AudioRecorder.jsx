@@ -5,15 +5,14 @@ import MicEnabled from '../../images/microphone.svg'
 import MicDisabled from '../../images/mic-off.svg'
 import styles from './AudioRecorder.module.scss'
 import { AUDIO_ANSWER_CODES } from '../../data/answerType';
-import { sessionQuestionsSelector } from '../../selectors/session';
+import { questionsCountSelector } from '../../selectors/session';
 import AudioLoadingState from '../../ui/AudioLoadingState';
 
 const AudioRecorder = ({ audioURL, setAudioURL }) => {
-  const { data } = useSelector(sessionQuestionsSelector)
   const [isMicRequired, setIsMicRequired] = useState(false)
   const [recording, setRecording] = useState(false);
   const [mediaRecorder, setMediaRecorder] = useState(null);
-  const len = data.length
+  const len = useSelector(questionsCountSelector)
 
   const startRecording = async () => {
     try {

@@ -4,5 +4,5 @@ const baseSelector = state => (state.report);
 
 export const reportDataSelector = createSelector(
   baseSelector,
-  (data) => data.report
+  (state) => state
 );
